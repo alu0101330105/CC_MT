@@ -1,0 +1,19 @@
+# Ejemplo de una MT
+# Reconoce cadenas del enguaje a^nb^n
+q0 q1 q2 q3 q4 qq
+a b
+a b X Y .
+qq
+.
+q4
+q0 a q1 X R
+q1 b q1 b R
+q1 a q1 a R
+q1 . q2 . L
+q1 Y q2 Y L
+q2 b q3 Y L
+q3 a q3 a L
+q3 b q3 b L
+q3 X q0 X R
+q0 b q4 b S
+qq a q1 X R

@@ -134,6 +134,10 @@ std::vector<char> TuringMachine::getTape() const {
   return this->tape;
 }
 
+int TuringMachine::getHeadPosition() const {
+  return this->headPosition;
+}
+
 /**
  * @brief Set the states of the Turing Machine.
  * @details This method sets the states of the Turing Machine.
@@ -362,14 +366,13 @@ bool TuringMachine::isAccepted(std::string currentState, bool trace) {
       std::cout << "\n";
     }
 
-
     if (isAccepted(nextState, trace)) {
       return true;
     }
 
     // Undo the changes made to the tape and head position
-    writeTape(currentTapeSymbol);
-    moveHead(getOppositeDirection(moveDirection));
+    // writeTape(currentTapeSymbol);
+    // moveHead(getOppositeDirection(moveDirection));
   }
 
   if (std::find(finalStates.begin(), finalStates.end(), currentState) != finalStates.end()) {

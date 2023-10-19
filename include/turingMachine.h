@@ -43,6 +43,7 @@ class TuringMachine {
     char getBlankSymbol() const;
     std::vector<std::string> getFinalStates() const;
     std::vector<char> getTape() const;
+    int getHeadPosition() const;
 
     void setStates(std::vector<State> states);
     void setAlphabet(std::vector<char> alphabet);

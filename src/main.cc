@@ -115,6 +115,26 @@ void readFromFile(std::string filename, TuringMachine& MT) {
       // std::cout << "Debug State: " + stateVector[i].getName() + "\n";
       if(actual.getOrigin() == stateVector[i].getName()) {
         // std::cout << "found " + actual.getOrigin() + " for state " + stateVector[i].getName() + "\n";
+        // check if transitions are legal:
+        // check for ilegal write symbol
+        if(std::find(tapeAlphabet.begin(), tapeAlphabet.end(), actual.getNewTapeSymbol()) == tapeAlphabet.end()) {
+          std::cerr << "Error: new tape symbol not in tape alphabet\n";
+          std::cerr << "Transition: " + actual.toString() + "\n";
+          exit(EXIT_FAILURE);
+        }
+        // check for ilegal read symbol
+        if(std::find(tapeAlphabet.begin(), tapeAlphabet.end(), actual.getSymbol()) == tapeAlphabet.end()) {
+          std::cerr << "Error: tape symbol not in tape alphabet\n";
+          std::cerr << "Transition: " + actual.toString() + "\n";
+          exit(EXIT_FAILURE);
+        }
+        // check for ilegal origin or destiny states
+        if(std::find(statesRaw.begin(), statesRaw.end(), actual.getOrigin()) == statesRaw.end() ||
+           std::find(statesRaw.begin(), statesRaw.end(), actual.getDestiny()) == statesRaw.end()) {
+          std::cerr << "Error: origin or destiny state not in states\n";
+          std::cerr << "Transition: " + actual.toString() + "\n";
+          exit(EXIT_FAILURE);
+        }
         stateVector[i].addTransition(actual);
         // std::cout << "checking state transition insertion: ";
         // for(Transition t : stateVector[i].getTransitions()) std::cout << t.toString() + "\n";
@@ -206,8 +226,20 @@ void testLoop(TuringMachine& MT, bool trace) {
   while(true) {
     std::cout << ">";
     std::cin >> word;
+    if(word == ":q") break;
     MT.setTape(word);
     bool accepted = MT.isAccepted(trace);
+    
+    std::cout << "Result: ";
+    for (int i = 0; i < MT.getTape().size(); i++) {
+      if (i == MT.getHeadPosition()) {
+        std::cout << "\033[1;31m" << MT.getTape()[i] << "\033[0m";
+      } else {
+        std::cout << MT.getTape()[i];
+      }
+    }
+    std::cout << "\n";
+
     std::cout << "The word " + word + " is";
     if(!accepted) std::cout << " not";
     std::cout << " accepted by the languaje.\n";
