@@ -9,6 +9,9 @@
  * 
  */
 
+#define YELLOW "\033[1;33m"
+#define RESET "\033[0m"
+
 #include "../include/turingMachine.h"
 #include <fstream>
 #include <sstream>
@@ -118,13 +121,13 @@ void readFromFile(std::string filename, TuringMachine& MT) {
         // check if transitions are legal:
         // check for ilegal write symbol
         if(std::find(tapeAlphabet.begin(), tapeAlphabet.end(), actual.getNewTapeSymbol()) == tapeAlphabet.end()) {
-          std::cerr << "Error: new tape symbol not in tape alphabet\n";
+          std::cerr << "Error: write tape symbol not in tape alphabet\n";
           std::cerr << "Transition: " + actual.toString() + "\n";
           exit(EXIT_FAILURE);
         }
         // check for ilegal read symbol
         if(std::find(tapeAlphabet.begin(), tapeAlphabet.end(), actual.getSymbol()) == tapeAlphabet.end()) {
-          std::cerr << "Error: tape symbol not in tape alphabet\n";
+          std::cerr << "Error: read symbol not in tape alphabet\n";
           std::cerr << "Transition: " + actual.toString() + "\n";
           exit(EXIT_FAILURE);
         }
@@ -146,9 +149,14 @@ void readFromFile(std::string filename, TuringMachine& MT) {
   // blank symbol in tape alphabet
   // initial state in states
   // final states in states
+  // alphabet in tape alphabet
 
   if(std::find(tapeAlphabet.begin(), tapeAlphabet.end(), blankSymbol[0]) == tapeAlphabet.end()) {
     std::cerr << "Error: blank symbol not in tape alphabet\n";
+    std::cerr << "Blank symbol: " + blankSymbol + "\n";
+    std::cerr << "Tape alphabet: ";
+    for(char c : tapeAlphabet) std::cerr << c << " ";
+    std::cerr << "\n";
     exit(EXIT_FAILURE);
   }
 
@@ -161,6 +169,10 @@ void readFromFile(std::string filename, TuringMachine& MT) {
   }
   if(!initialStateFound) {
     std::cerr << "Error: initial state not in states\n";
+    std::cerr << "Initial state: " + initialState + "\n";
+    std::cerr << "States: ";
+    for(State s : stateVector) std::cerr << s.getName() + " ";
+    std::cerr << "\n";
     exit(EXIT_FAILURE);
   }
 
@@ -174,6 +186,23 @@ void readFromFile(std::string filename, TuringMachine& MT) {
     }
     if(!finalStateFound) {
       std::cerr << "Error: final state not in states\n";
+      std::cerr << "Final state: " + final + "\n";
+      std::cerr << "States: ";
+      for(State s : stateVector) std::cerr << s.getName() + " ";
+      std::cerr << "\n";
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  for(char c : alphabet) {
+    if(std::find(tapeAlphabet.begin(), tapeAlphabet.end(), c) == tapeAlphabet.end()) {
+      std::cerr << "Error: alphabet not in tape alphabet\n";
+      std::cerr << "Alphabet: ";
+      for(char c : alphabet) std::cerr << c << " ";
+      std::cerr << "\n";
+      std::cerr << "Tape alphabet: ";
+      for(char c : tapeAlphabet) std::cerr << c << " ";
+      std::cerr << "\n";
       exit(EXIT_FAILURE);
     }
   }
@@ -187,29 +216,29 @@ void readFromFile(std::string filename, TuringMachine& MT) {
   MT.setFinalStates(finalStates);
   
 
-  std::cout << "read automata:\n  alphabet = {";
+  std::cout << YELLOW << "read automata:\n  alphabet" << RESET << " = {";
   for(char c : MT.getAlphabet()) {
     std::cout << c << " ";
   }
-  std::cout << "}\n  tape alphabet = {";
+  std::cout << "}\n  " << YELLOW << "  alphabet" << RESET << " = {";
   for(char c : MT.getTapeAlphabet()) {
     std::cout << c << " ";
   }
 
-  std::cout << "}\n  blank simbol = {" << MT.getBlankSymbol();
+  std::cout << "}\n" << YELLOW << "  blank simbol" << RESET << " = {" << MT.getBlankSymbol();
 
-  std::cout << "}\n  states = {";
+  std::cout << "}\n" << YELLOW << "  states" << RESET << " = {";
   for(State s : MT.getStates()) {
     std::cout << s.getName() << " ";
   }
 
-  std::cout << "}\n  initial state = {" + MT.getInitialState();
-  std::cout << "}\n  final states = {";
+  std::cout << "}\n" << YELLOW << "  initial state" << RESET << " = {" + MT.getInitialState();
+  std::cout << "}\n" << YELLOW << "  final states" << RESET << " = {";
   for(std::string s : MT.getFinalStates()) {
     std::cout << s << " ";
   }
 
-  std::cout << "}\n  transitions = {\n";
+  std::cout << "}\n" << YELLOW << "  transitions" << RESET << " = {\n";
   for(State s : MT.getStates()) {
     for(Transition t : s.getTransitions()) {
       std::cout << "    " + t.toString() + "\n";
@@ -221,6 +250,7 @@ void readFromFile(std::string filename, TuringMachine& MT) {
 
 void testLoop(TuringMachine& MT, bool trace) {
   std::cout << (trace ? "$trace" : "$noTrace") << std::endl;
+  std::cout << "\033[1;31m" << "?" << "\033[0m" << " > to quit use ':q'\n";
 
   std::string word = "";
   while(true) {
